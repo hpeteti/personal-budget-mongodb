@@ -1,19 +1,13 @@
 const express = require('express');
 const app = express();
 const port = 3000;
-const fs = require('fs');
+const fileSystem = require('fs');
+const importJSON = fileSystem.readFileSync('data.json','utf8');
+const budgetData = JSON.parse(importJSON);
 
 app.use('/', express.static('public'));
 
 const budget = [];
-
-fs.readFile('budget.json', 'utf8', (err, data) => {
-    if (err) {
-        console.error(err);
-    } else {
-        budgetData = JSON.parse(data);
-    }
-});
 
 app.get('/hello', (req,res) => {
     res.send('Hello World!');
