@@ -1,10 +1,13 @@
+// Budget API
 const express = require('express');
+const cors = require('cors');
 const app = express();
 const port = 3000;
 const fileSystem = require('fs');
 const importJSON = fileSystem.readFileSync('data.json','utf8');
 const budgetData = JSON.parse(importJSON);
 
+app.use(cors());
 app.use('/', express.static('public'));
 
 const budget = [];
@@ -18,5 +21,5 @@ app.get('/budget', (req,res) => {
 });
 
 app.listen(port, () => {
-    console.log('Example app listening at http://localhost:${port}')
+    console.log(`Example app listening at http://localhost:${port}`)
 });
