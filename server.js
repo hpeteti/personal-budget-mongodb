@@ -1,4 +1,4 @@
-// "mongodb://127.0.0.1:27017";
+// "mongodb://127.0.0.1:27017"; mongo
 const mongoose = require("mongoose");
 const budgetModel = require("./models/budget_model.js");
 const bodyParser = require("body-parser");
@@ -37,6 +37,7 @@ app.get("/budget", (req, res) => {
   });
 });
 
+
 app.post("/budget", (req, res) => {
   mongoose.connect("mongodb://127.0.0.1:27017/chart", {
     useNewUrlParser: true,
@@ -44,21 +45,28 @@ app.post("/budget", (req, res) => {
   })
   .then(() => {
     console.log("Connected to the database");
-    const newItem = new budgetModel(req.body);
-    budgetModel.create(newItem) 
-      .then((data) => {
-        res.json(data);
-        console.log(data);
+
+    const data = req.body;
+
+    // Use Promise.all to create and save all budget items
+    Promise.all(data.map(itemData => {
+      const newItem = new budgetModel(itemData);
+      return newItem.save();
+    }))
+      .then((savedItems) => {
+        // res.json(savedItems);
+        res.json('successfully added data');
+        console.log(savedItems);
         mongoose.connection.close();
       })
       .catch((connectionError) => {
         console.error(connectionError);
-        res.status(400).json({error:'Server error'})
+        res.status(500).json({ error: 'Internal Server Error' });
       });
   })
   .catch((err) => {
     console.error(err);
-    res.status(400).json({error:'Server error'})
+    res.status(500).json({ error: 'Server Error' });
   });
 });
 
